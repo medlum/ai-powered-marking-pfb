@@ -1,7 +1,6 @@
 import streamlit as st
 from huggingface_hub import InferenceClient
 from utils import *
-from streamlit_extras.grid import grid
 import zipfile
 from pathlib import Path
 from sys_message import *
@@ -182,9 +181,7 @@ if upload_student_report is not None:
                         
                         except (ValueError, SyntaxError):
                             st.error("The model's response is not in the expected format.")
-                            continue
-
-                        
+                            continue                        
 
             except Exception as e:
                 st.error(f"Error generating response: {e}")
