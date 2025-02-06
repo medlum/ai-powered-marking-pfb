@@ -178,11 +178,13 @@ if upload_student_report is not None:
                         try:
                             actual_dict = ast.literal_eval(collected_response)
                             data.append(actual_dict)
+                            del st.session_state.msg_history[5:]
+                        
                         except (ValueError, SyntaxError):
                             st.error("The model's response is not in the expected format.")
                             continue
 
-                        del st.session_state.msg_history[5:]
+                        
 
             except Exception as e:
                 st.error(f"Error generating response: {e}")
@@ -190,7 +192,7 @@ if upload_student_report is not None:
     else:
         for key in st.session_state.keys():
             del st.session_state[key]
-            
+
         st.cache_data.clear()
         st.rerun()
 
