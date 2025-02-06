@@ -96,6 +96,13 @@ with st.sidebar:
     clear_btn = st.button(":material_refresh: Clear History", type="primary")
     st.markdown(f'<span style="font-size:12px; color:gray;">{disclaimer_var}</span>', unsafe_allow_html=True)
 
+if clear_btn:
+    
+    for key in st.session_state.keys():
+        del st.session_state[key]
+
+    st.rerun()
+
 #--- extract pdf and add to session state---#
 data = []
 if upload_student_report is not None:
