@@ -100,7 +100,7 @@ if clear_btn:
     
     for key in st.session_state.keys():
         del st.session_state[key]
-
+    st.cache_data.clear()
     st.rerun()
 
 #--- extract pdf and add to session state---#
@@ -186,6 +186,13 @@ if upload_student_report is not None:
 
             except Exception as e:
                 st.error(f"Error generating response: {e}")
+
+    else:
+        for key in st.session_state.keys():
+            del st.session_state[key]
+            
+        st.cache_data.clear()
+        st.rerun()
 
 if data:
     combined_data = {}
