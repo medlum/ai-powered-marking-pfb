@@ -152,14 +152,14 @@ if upload_student_report:
                         for chunk in stream:
                             if 'delta' in chunk.choices[0] and 'content' in chunk.choices[0].delta:
                                 collected_response += chunk.choices[0].delta.content
-                                st.chat_message("assistant").text(collected_response.replace('{','').replace('}',''))
+                                st.text(collected_response.replace('{','').replace('}',''))
 
                         # Convert string to dict
 
                         actual_dict = ast.literal_eval(collected_response)
                         data.append(actual_dict)
                         del st.session_state.msg_history[5:]
-                        status.update(label="Evaluation completed...", state="complete", expanded=True)
+                        status.update(label="Evaluation complete...", state="complete", expanded=True)
 
 else:
     for key in st.session_state.keys():
@@ -187,7 +187,7 @@ if data:
     columns = list(df.columns)
     columns.insert(6, columns.pop(columns.index('Total')))
     df = df[columns]
-    st.markdown(":blue[Click :material/download: on the right to download]")
+    st.markdown(":blue[Click :material/download: on the right to download table]")
     st.dataframe(df)
 
 
