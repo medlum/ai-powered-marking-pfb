@@ -93,7 +93,6 @@ with st.sidebar:
     st.markdown(f'<span style="font-size:12px; color:gray;">{disclaimer_var}</span>', unsafe_allow_html=True)
 
 if clear_btn:
-    st.write("test")
     for key in st.session_state.keys():
         del st.session_state[key]
     st.cache_data.clear()
@@ -137,7 +136,8 @@ if upload_student_report:
                     "content": f"Mark this assignment: {student_report}"
                 })
 
-                with st.spinner("EVALUATING CODE..."):
+                with st.status("Evaluating...", expanded=True) as status:
+                #with st.spinner("EVALUATING CODE..."):
                     with st.empty():
                         stream = client.chat_completion(
                             model=model_id,
@@ -159,6 +159,7 @@ if upload_student_report:
                         actual_dict = ast.literal_eval(collected_response)
                         data.append(actual_dict)
                         del st.session_state.msg_history[5:]
+                        status.update(label="Evaluation completed...", state="complete", expanded=True)
 
 else:
     for key in st.session_state.keys():
@@ -186,6 +187,7 @@ if data:
     columns = list(df.columns)
     columns.insert(6, columns.pop(columns.index('Total')))
     df = df[columns]
+    st.markdown(":blue[Click :material/download: on the right to download]")
     st.dataframe(df)
 
 
