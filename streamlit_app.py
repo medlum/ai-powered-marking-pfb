@@ -213,5 +213,5 @@ if data:
     columns.insert(6, columns.pop(columns.index('Total')))
     df = df[columns]
     st.dataframe(df)
-    st.balloons()
+
 
