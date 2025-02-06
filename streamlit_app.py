@@ -7,7 +7,7 @@ from sys_message import *
 from charset_normalizer import from_path
 import ast
 import pandas as pd
-
+import shutil
 # ---------set up page config -------------#
 st.set_page_config(page_title="PFB Assistive Marking AI Tool",
                    layout="centered",
@@ -19,11 +19,8 @@ st.markdown(btn_css, unsafe_allow_html=True)
 st.markdown(image_css, unsafe_allow_html=True)
 
 # --- Initialize the Inference Client with the API key ----#
-try:
-    client = InferenceClient(token=st.secrets.api_keys.huggingfacehub_api_token)
-except Exception as e:
-    st.error(f"Error initializing Inference Client: {e}")
-    st.stop()
+
+client = InferenceClient(token=st.secrets.api_keys.huggingfacehub_api_token)
 
 
 # ------- initialize first system message --------#
@@ -96,66 +93,50 @@ with st.sidebar:
     st.markdown(f'<span style="font-size:12px; color:gray;">{disclaimer_var}</span>', unsafe_allow_html=True)
 
 if clear_btn:
-    
+    st.write("test")
     for key in st.session_state.keys():
         del st.session_state[key]
     st.cache_data.clear()
-    st.rerun()
+    #st.rerun()
 
 #--- extract pdf and add to session state---#
 data = []
-if upload_student_report is not None:
+if upload_student_report:
+    # Define extraction path
+    extract_folder = "extracted_pyfiles"
+
+     # Clear previous data
+    if Path(extract_folder).exists():
+        shutil.rmtree(extract_folder)
+
+    # Extract ZIP file
+    with zipfile.ZipFile(upload_student_report, "r") as zip_ref:
+            zip_ref.extractall(extract_folder)
+
+    py_files = list(Path(extract_folder).rglob("*.py"))
+
     if evaluate_btn:
-        if not model_id:
-            st.error("Please select an AI model.")
-            st.stop()
-
-        # Define extraction path
-        extract_folder = "extracted_pyfiles"
-
-        # Extract ZIP file
-        try:
-            with zipfile.ZipFile(upload_student_report, "r") as zip_ref:
-                zip_ref.extractall(extract_folder)
-        except zipfile.BadZipFile:
-            st.error("The uploaded file is not a valid ZIP file.")
-            st.stop()
-        except Exception as e:
-            st.error(f"An error occurred while extracting the ZIP file: {e}")
-            st.stop()
-
-        py_files = list(Path(extract_folder).rglob("*.py"))
-        if not py_files:
-            st.error("No Python files found in the uploaded ZIP file.")
-            st.stop()
 
         for file in py_files:
-            try:
-                # Using from_path to detect encoding
-                result = from_path(file)
-                best_match = result.best()
-                encoding = best_match.encoding if best_match else "utf-8"
+            #try:
+            # Using from_path to detect encoding
+            result = from_path(file)
+            best_match = result.best()
+            encoding = best_match.encoding if best_match else "utf-8"
 
-                # Read the file with the detected encoding
-                with open(file, "r", encoding=encoding) as f:
-                    student_report = f.read()
+            # Read the file with the detected encoding
+            with open(file, "r", encoding=encoding) as f:
+                student_report = f.read()
 
                 # Display file content with syntax highlighting
                 st.sidebar.code(student_report, language="python")
 
-            except UnicodeDecodeError:
-                st.error(f"Failed to decode the file {file.name}.")
-                continue
-            except Exception as e:
-                st.error(f"An error occurred while processing the file {file.name}: {e}")
-                continue
 
-            st.session_state.msg_history.append({
-                "role": "system",
-                "content": f"Mark this assignment: {student_report}"
-            })
+                st.session_state.msg_history.append({
+                    "role": "system",
+                    "content": f"Mark this assignment: {student_report}"
+                })
 
-            try:
                 with st.spinner("EVALUATING CODE..."):
                     with st.empty():
                         stream = client.chat_completion(
@@ -174,24 +155,17 @@ if upload_student_report is not None:
                                 st.chat_message("assistant").write(collected_response)
 
                         # Convert string to dict
-                        try:
-                            actual_dict = ast.literal_eval(collected_response)
-                            data.append(actual_dict)
-                            del st.session_state.msg_history[5:]
-                        
-                        except (ValueError, SyntaxError):
-                            st.error("The model's response is not in the expected format.")
-                            continue                        
 
-            except Exception as e:
-                st.error(f"Error generating response: {e}")
+                        actual_dict = ast.literal_eval(collected_response)
+                        data.append(actual_dict)
+                        del st.session_state.msg_history[5:]
 
-    else:
-        for key in st.session_state.keys():
-            del st.session_state[key]
+else:
+    for key in st.session_state.keys():
+        del st.session_state[key]
 
-        st.cache_data.clear()
-        st.rerun()
+    st.cache_data.clear()
+    #st.rerun()
 
 if data:
     combined_data = {}
