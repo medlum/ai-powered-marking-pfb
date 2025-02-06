@@ -152,7 +152,7 @@ if upload_student_report:
                         for chunk in stream:
                             if 'delta' in chunk.choices[0] and 'content' in chunk.choices[0].delta:
                                 collected_response += chunk.choices[0].delta.content
-                                st.chat_message("assistant").write(collected_response)
+                                st.chat_message("assistant").text(collected_response.replace('{','').replace('}',''))
 
                         # Convert string to dict
 
