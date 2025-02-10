@@ -48,12 +48,20 @@ def extract_and_read_files(main_zip_path):
                     extracted_data[folder_name]["team_members"] = f.readlines()
             
             for py_file in folder.glob("*.py"):  # Avoid recursive rglob to limit scope per folder
-                result = from_path(py_file)
-                encoding = result.best().encoding if result.best() else "utf-8"
-                with open(py_file, "r", encoding=encoding) as f:
-                    extracted_data[folder_name]["python_files"].append((py_file.name, f.read()))
-    
-    return extracted_data
+                try:
+                    result = from_path(py_file)
+                    encoding = result.best().encoding if result.best() else "utf-8"
+                except Exception:
+                    st.error("Encoding issue")
+                    encoding = "utf-8"  # Fallback to UTF-8 if charset_normalizer fails
+                
+                try:
+                    with open(py_file, "r", encoding=encoding, errors="replace") as f:
+                        extracted_data[folder_name]["python_files"].append((py_file.name, f.read()))
+                except Exception as e:
+                    st.error(f"Error reading {py_file.name}: {e}")  # Display error in Streamlit
+                
+                return extracted_data
 
 # Example usage in Streamlit
 #uploaded_file = st.file_uploader("Upload a ZIP file", type=["zip"])

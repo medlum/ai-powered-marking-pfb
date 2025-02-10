@@ -118,7 +118,7 @@ if upload_student_report:
 if clear_btn:
     for key in st.session_state.keys():
         del st.session_state[key]
-    st.cache_data.clear()
+    st.cache_data.clear()    
 
 if data:
    

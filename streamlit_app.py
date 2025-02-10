@@ -35,7 +35,7 @@ if 'msg_history' not in st.session_state:
     - Use the marking rubrics available for assigning marks. 
     - Assign a mark for each of the criterion in the marking rubrics.
     - Do not assign more than the maximum mark in each criterion.
-    - Write a short comment for each marking criteria after assigning the marks.
+    - Write a feedback on each marking criteria with specific instances where the codes are lacking or good.
     - Return the marks and the comment in a dictionary : {
             'Name': [ ],
             'Program Correctness': [ ],

@@ -6,7 +6,7 @@ system_message = """
     -- Read the student's brief to understand the assignment requirement. 
     -- Refer to the marking rubrics available for assigning marks. 
     -- Do not assign more than the maximum mark in each marking criterion.
-    -- Provide a detail feedback on each of the submitted Python files and comment on the strong and weak aspects of student's code. Give specific instances where codes are lacking or good.
+    -- Provide a detail feedback on each of the submitted Python files and comment on the strong and weak aspects of student's code. Give specific instances where the codes are lacking or good.
     -- Assign a mark for each of the criterion.
     -- Be stringent when marking.
     -- Return the marks and feedback in a dictionary : 
