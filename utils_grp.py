@@ -61,7 +61,7 @@ def extract_and_read_files(main_zip_path):
                 except Exception as e:
                     st.error(f"Error reading {py_file.name}: {e}")  # Display error in Streamlit
                 
-                return extracted_data
+    return extracted_data
 
 # Example usage in Streamlit
 #uploaded_file = st.file_uploader("Upload a ZIP file", type=["zip"])
